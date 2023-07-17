@@ -1,15 +1,76 @@
 import { Text, View, TouchableOpacity } from "react-native"
 import { styles } from "./styles"
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { MotiText, MotiView, useAnimationState } from 'moti'
+import { useEffect } from "react";
 
-export const Home = () => {
+
+type RootStackParamList = {
+    relogio: undefined;
+    home: undefined;
+};
+
+type props = {
+    navigation: BottomTabNavigationProp<RootStackParamList, 'home'>;
+};
+
+
+export const Home = ({ navigation }: props) => {
+
+    const withAnimetedState = useAnimationState({
+        w1:{
+            width:50
+        },
+        w2:{
+            width:100
+        }
+    })
+
+    const opacity = useSharedValue(0);
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            opacity: opacity.value
+        }
+    })
+
+    useEffect(() => {
+        opacity.value = withTiming(1, { duration: 3000 })
+
+    }, [])
+
+    const handleRelogio = () => {
+        withAnimetedState.transitionTo('w2')
+
+        //navigation.navigate('relogio')
+
+    }
+
+    const handleClickWith = ()=>{
+        withAnimetedState.transitionTo('w1')
+    }
     return (
         <View style={styles.container}>
+            <Animated.Text style={[styles.textBv, animatedStyle]}>Bem vindo, Flavica</Animated.Text>
             <View style={styles.containerCxPrincipal}>
-                <View>
+
+                <MotiView
+                    from={{
+                        rotate: '100deg',
+                        opacity: 0
+                    }}
+                    animate={{
+                        rotate: '0deg',
+                        opacity: 1
+                    }}
+                    transition={{
+                        type: 'timing',
+                        duration: 2000
+                    }}>
                     <TouchableOpacity
                         style={styles.caixaOne}
-                        onPress={() => alert('ola mundo')}>
+                        onPress={handleClickWith}>
                         <Text>
                             <Ionicons
                                 name="add-circle"
@@ -17,11 +78,24 @@ export const Home = () => {
                                 color={'white'} />
                         </Text>
                     </TouchableOpacity>
-                </View>
-                <View >
+                </MotiView>
+                <MotiView
+                    from={{
+                        rotate: '100deg',
+                        opacity: 0
+                    }}
+                    animate={{
+                        rotate: '0deg',
+                        opacity: 1
+                    }}
+                    transition={{
+                        type: 'timing',
+                        duration: 2000
+                    }}
+                >
                     <TouchableOpacity
                         style={styles.caixaOne}
-                        onPress={() => alert('ola mundo')}>
+                        onPress={handleRelogio}>
                         <Text>
                             <Ionicons
                                 name="time"
@@ -29,9 +103,20 @@ export const Home = () => {
                                 color={'white'} />
                         </Text>
                     </TouchableOpacity>
-                </View>
+                </MotiView>
             </View>
-            <Text style={styles.text}>.</Text>
+            <MotiText
+                state={withAnimetedState}
+                from={{ opacity: 0 }}
+                animate={{
+                    opacity: 1
+                }}
+                transition={{
+                    type: 'timing',
+                    duration: 3000
+                }}
+                style={styles.text}>.
+            </MotiText>
         </View>
     )
 }
